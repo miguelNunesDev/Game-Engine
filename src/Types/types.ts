@@ -10,6 +10,7 @@ enum Space {
     WORLD,
     LOCAL,
 }
+type Image = CanvasImageSource 
 type boundingBox = {
     position: {
         x: number,
@@ -185,5 +186,6 @@ export {
     Rad,
     boundingBox,
     localVector,
-    worldVector
+    worldVector,
+    Image
 }

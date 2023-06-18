@@ -18,7 +18,6 @@ export class Game {
     private static _position: Vector
     private _size: Size
     private _world: World
-    // private _debugPanel: Panel
 
     static DOC: any
     static WINDOW: Window
@@ -28,7 +27,6 @@ export class Game {
     public cursor: Cursor
     public entities: EntitiesManager
     public collision: CollisionManager
-    // public ui: UiManager
 
     private constructor(canvas: Canvas) {
 
@@ -45,21 +43,12 @@ export class Game {
         this._world = World.getInstance();
         //MANAGERS
         this.time = TimeManager.getInstance();
-        this.entities = new EntitiesManager(this._context);
+        this.entities = EntitiesManager.getInstance(this._context);
         this.debug = DebugManager.getInstance(this._context);
         this.collision = CollisionManager.getInstance();
-        // this.ui = UiManager.getIntance();
         this.cursor = Cursor.getInstance(this.canvas);
         this.context.fillStyle = 'white';
         this.context.fillRect(0, 0, this.size.w, this.size.h);
-        // const panel = document.querySelector('#debug-panel');
-        // if (panel) {
-        //     this._debugPanel = {
-        //         element: panel as HTMLLabelElement,
-        //         content: []
-        //     }
-        //     this.ui.queue(this._debugPanel)
-        // }
     }
 
     public clear() {
@@ -77,7 +66,6 @@ export class Game {
 
     public update() {
         window.requestAnimationFrame(() => {
-            // this.ui.queue(`x: ${this.mouse.position.x} y: ${this.mouse.position.y}`);
             this.collision.update();
             this.render();
             this.update();
@@ -96,6 +84,7 @@ export class Game {
     private setPosition(pos: DOMRect) { return new Vector(pos.left, pos.top) }
 
     get size(): Size { return this._size }
+    private set size(size: DOMRect) { this._size = new Size(size.width, size.height) }
     private setSize(size: DOMRect) { return new Size(size.width, size.height) }
 
     get canvas(): Canvas { return this._canvas; }

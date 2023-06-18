@@ -1,5 +1,4 @@
 import { Entity } from "../Primitives/Entity.js";
-import { Line } from "../Primitives/Line.js";
 import { Square } from "../Primitives/Square.js";
 import { Context, Vector } from "../Types/types";
 

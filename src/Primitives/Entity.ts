@@ -33,8 +33,8 @@ export class Entity {
         this._size = size;
 
         this._center = new Vector(
-            this._position.world.x + this._size.w * 0.5,
-            this._position.world.y + this._size.h * 0.5
+            Number((this._position.world.x + this._size.w * 0.5).toFixed(3)),
+            Number((this._position.world.y + this._size.h * 0.5).toFixed(3))
         )
 
         this.setPosition(pos);
@@ -102,8 +102,8 @@ export class Entity {
     }
     set center(pos: Vector) {
         this.setPosition(new Vector(
-            pos.x - this.size.w * 0.5,
-            pos.y - this.size.h * 0.5
+            Number((pos.x - this.size.w * 0.5).toFixed(3)),
+            Number((pos.y - this.size.h * 0.5).toFixed(3))
         ))
     }
     get center() { return this._center }
