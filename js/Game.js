@@ -47,8 +47,8 @@ var Game = /** @class */ (function () {
     };
     Game.prototype.update = function () {
         var _this = this;
-        this.time.updateDelta();
         window.requestAnimationFrame(function () {
+            _this.time.update();
             _this.collision.update();
             _this.render();
             _this.update();

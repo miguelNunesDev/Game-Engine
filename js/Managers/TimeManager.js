@@ -6,11 +6,12 @@ var TimeManager = /** @class */ (function () {
         this._lastTime = 0;
         this._now = 0;
         this._intervals = [];
+        this._actions = [];
     }
     TimeManager.getInstance = function (fps, interval) {
         if (fps === void 0) { fps = 60; }
         if (interval === void 0) { interval = 1000; }
-        return TimeManager._instance ? TimeManager._instance : new TimeManager(fps, interval);
+        return TimeManager._instance ? TimeManager._instance : TimeManager._instance = new TimeManager(fps, interval);
     };
     TimeManager.prototype.startInterval = function () {
         var intervalIndex = this._intervals.length;
@@ -25,6 +26,21 @@ var TimeManager = /** @class */ (function () {
         }
         var delta = elapsed / this._fps;
         return delta;
+    };
+    TimeManager.prototype.update = function () {
+        var _this = this;
+        this.updateDelta();
+        if (!this._actions.length)
+            return;
+        this._actions.forEach(function (f) {
+            f(_this._delta);
+        });
+    };
+    TimeManager.prototype.onUpdate = function (f) {
+        var index = this._actions.length;
+        this._actions.push(f);
+        console.log(this._actions.length);
+        return index;
     };
     TimeManager.prototype.updateDelta = function () {
         this._now = new Date().getTime();

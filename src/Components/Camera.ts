@@ -15,17 +15,17 @@ export class Camera {
     }
     initListeners() {
         const cursor = Cursor.getInstance();
-        cursor.on(MouseState.MOVE, () => {
-
-            if (cursor.state !== MouseState.L_DOWN) return;
-            const time = TimeManager.getInstance()
+        const time = TimeManager.getInstance();
+        time.onUpdate((delta: number) => {
+            
+            if (cursor.state !== MouseState.L_DOWN) return;            
+            
             let lastPosition = cursor.position.world;
-            const intervalIndex = time.startInterval()
             requestAnimationFrame(() => {
-                const deltaTime = time.endInterval(intervalIndex);
                 const deltaPos = Vector.sub(cursor.position.world, lastPosition);
-                console.log(lastPosition, deltaPos);
-                this._position = Vector.add(this._position, Vector.mult(cursor.deltaPosition, deltaTime * 3))
+                console.log(cursor.position.world);
+                
+                this._position = Vector.add(this._position, Vector.mult(deltaPos, delta * 1))
                 lastPosition = this._position;
             })
 

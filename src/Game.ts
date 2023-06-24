@@ -81,8 +81,8 @@ export class Game {
     }
 
     public update() {
-        this.time.updateDelta();
         window.requestAnimationFrame(() => {
+            this.time.update();
             this.collision.update();
             this.render();
             this.update();

@@ -61,18 +61,26 @@ var Cursor = /** @class */ (function (_super) {
                 func();
             });
         });
-        canvas.addEventListener('touchstart', function () {
+        canvas.addEventListener('touchstart', function (e) {
             _this.state = MouseState.L_DOWN;
-            _this.actions[MouseState.L_DOWN].forEach(function (action) {
-                action();
+            if (!_this.actions[MouseState.L_DOWN].length)
+                return;
+            _this.actions[MouseState.L_DOWN].forEach(function (func) {
+                func();
             });
         }, { passive: false });
-        canvas.addEventListener('touchmove', function () {
-            _this.state = MouseState.DRAG;
-            _this.actions[MouseState.DRAG].forEach(function (action) {
+        // canvas.addEventListener('touchmove', () => {
+        //     this.state = MouseState.DRAG;
+        //     this.actions[MouseState.DRAG].forEach(action => {
+        //         action();
+        //     });
+        // }, { passive: false })
+        canvas.addEventListener('touchend', function () {
+            _this.state = MouseState.L_UP;
+            _this.actions[MouseState.L_UP].forEach(function (action) {
                 action();
             });
-        }, { passive: false });
+        });
         canvas.addEventListener('dragstart', function (e) {
             e.preventDefault();
             _this.state = MouseState.L_DOWN;
@@ -113,6 +121,24 @@ var Cursor = /** @class */ (function (_super) {
                 _this.lastPosition = localPosition;
                 _this.setPosition(localPosition);
             });
+            if (!_this.actions[MouseState.MOVE].length)
+                return;
+            _this.actions[MouseState.MOVE].forEach(function (action) {
+                action();
+            });
+        });
+        canvas.addEventListener('touchmove', function (e) {
+            var rect = _this.canvas.getBoundingClientRect();
+            var camera = CameraManager.getInstance().current;
+            _this.lastPosition = _this.lastPosition || _this.position.world;
+            _this._absolutePosition = new Vector(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
+            var localPosition = Vector.add(_this._absolutePosition, camera.position);
+            requestAnimationFrame(function () {
+                _this.deltaPosition = Vector.sub(localPosition, _this.lastPosition);
+                _this.lastPosition = localPosition;
+                _this.setPosition(localPosition);
+            });
+            console.log(localPosition);
             if (!_this.actions[MouseState.MOVE].length)
                 return;
             _this.actions[MouseState.MOVE].forEach(function (action) {

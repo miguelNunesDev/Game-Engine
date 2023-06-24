@@ -11,17 +11,15 @@ var Camera = /** @class */ (function () {
     Camera.prototype.initListeners = function () {
         var _this = this;
         var cursor = Cursor.getInstance();
-        cursor.on(MouseState.MOVE, function () {
+        var time = TimeManager.getInstance();
+        time.onUpdate(function (delta) {
             if (cursor.state !== MouseState.L_DOWN)
                 return;
-            var time = TimeManager.getInstance();
             var lastPosition = cursor.position.world;
-            var intervalIndex = time.startInterval();
             requestAnimationFrame(function () {
-                var deltaTime = time.endInterval(intervalIndex);
                 var deltaPos = Vector.sub(cursor.position.world, lastPosition);
-                console.log(lastPosition, deltaPos);
-                _this._position = Vector.add(_this._position, Vector.mult(cursor.deltaPosition, deltaTime * 3));
+                console.log(cursor.position.world);
+                _this._position = Vector.add(_this._position, Vector.mult(deltaPos, delta * 1));
                 lastPosition = _this._position;
             });
         });

@@ -5,6 +5,7 @@ import { Canvas, Vector, MouseState } from "../Types/types.js";
 import { Circle } from "./Circle.js";
 import { Entity } from "./Entity.js";
 import { CameraManager } from "../Managers/CameraManager.js";
+import { TimeManager } from "../Managers/TimeManager.js";
 
 export class Cursor extends Entity {
     lastPosition: Vector;
@@ -57,18 +58,26 @@ export class Cursor extends Entity {
                 func();
             })
         })
-        canvas.addEventListener('touchstart', () => {
+        canvas.addEventListener('touchstart', (e) => {
+            
             this.state = MouseState.L_DOWN;
-            this.actions[MouseState.L_DOWN].forEach(action => {
+            if (!this.actions[MouseState.L_DOWN].length) return;
+            this.actions[MouseState.L_DOWN].forEach((func: Function) => {
+                func();
+            })
+        }, { passive: false })
+        // canvas.addEventListener('touchmove', () => {
+        //     this.state = MouseState.DRAG;
+        //     this.actions[MouseState.DRAG].forEach(action => {
+        //         action();
+        //     });
+        // }, { passive: false })
+        canvas.addEventListener('touchend', () => {
+            this.state = MouseState.L_UP;
+            this.actions[MouseState.L_UP].forEach(action => {
                 action();
             });
-        }, { passive: false })
-        canvas.addEventListener('touchmove', () => {
-            this.state = MouseState.DRAG;
-            this.actions[MouseState.DRAG].forEach(action => {
-                action();
-            });
-        }, { passive: false })
+        })
         canvas.addEventListener('dragstart', (e) => {
             e.preventDefault();
             this.state = MouseState.L_DOWN;
@@ -97,6 +106,7 @@ export class Cursor extends Entity {
                 action();
             });
         })
+
         canvas.addEventListener('mousemove', (e) => {
             const rect = this.canvas.getBoundingClientRect();
             const camera = CameraManager.getInstance().current;
@@ -105,12 +115,34 @@ export class Cursor extends Entity {
                 e.clientX - rect.left,
                 e.clientY - rect.top
             )
-            const localPosition = Vector.add(this._absolutePosition,camera.position)
+            const localPosition = Vector.add(this._absolutePosition, camera.position)
             requestAnimationFrame(() => {
                 this.deltaPosition = Vector.sub(localPosition, this.lastPosition);
                 this.lastPosition = localPosition;
                 this.setPosition(localPosition)
             })
+
+            if (!this.actions[MouseState.MOVE].length) return;
+            this.actions[MouseState.MOVE].forEach(action => {
+                action();
+            });
+        })
+        canvas.addEventListener('touchmove', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            const camera = CameraManager.getInstance().current;
+            this.lastPosition = this.lastPosition || this.position.world;
+            this._absolutePosition = new Vector(
+                e.touches[0].clientX - rect.left,
+                e.touches[0].clientY - rect.top
+            )
+            const localPosition = Vector.add(this._absolutePosition, camera.position)
+            requestAnimationFrame(() => {
+                this.deltaPosition = Vector.sub(localPosition, this.lastPosition);
+                this.lastPosition = localPosition;
+                this.setPosition(localPosition)
+            })
+            console.log(localPosition);
+            
 
             if (!this.actions[MouseState.MOVE].length) return;
             this.actions[MouseState.MOVE].forEach(action => {
