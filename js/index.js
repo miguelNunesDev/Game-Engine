@@ -9,8 +9,8 @@ if (!canvas)
 Doc.game = Game.getInstance(canvas);
 var game = Doc.game;
 // ASSETS
-game.asset.add('blank-tile', '../assets/blank_tile.png');
-game.asset.add('black-tile', '../assets/black_tile.png');
+game.asset.add('blank-tile', './assets/blank_tile.png');
+game.asset.add('black-tile', './assets/black_tile.png');
 document.addEventListener('DOMContentLoaded', function () {
     game.asset.load();
     game.update();

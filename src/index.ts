@@ -11,8 +11,8 @@ Doc.game = Game.getInstance(canvas);
 const game: Game = Doc.game;
 
 // ASSETS
-game.asset.add('blank-tile','../assets/blank_tile.png');
-game.asset.add('black-tile','../assets/black_tile.png');
+game.asset.add('blank-tile','./assets/blank_tile.png');
+game.asset.add('black-tile','./assets/black_tile.png');
 
 document.addEventListener('DOMContentLoaded', () => {
     game.asset.load();
