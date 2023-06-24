@@ -3,12 +3,19 @@ import { Asset } from "../Components/Asset.js";
 export class AssetManager {
     assets: Map<string, HTMLImageElement>
     unloaded: Array<Asset>
-    constructor() {
+    private static _instance: AssetManager
+    private constructor() {
         this.assets = new Map<string, HTMLImageElement>();
         this.unloaded = [];
     }
+    public static getInstance(): AssetManager {
+        if (!AssetManager._instance) {
+            AssetManager._instance = new AssetManager();
+        }
+        return AssetManager._instance;
+    }
     get(assetName: string) {
-        return assetName ? this.assets.get(assetName) : this.assets;
+        return this.assets.get(assetName);
     }
     add(name: string, path: string) {
         this.unloaded.push(new Asset(name, path));

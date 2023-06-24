@@ -1,7 +1,10 @@
 import { CollisionManager } from "../Managers/CollisionManager.js";
+import { SceneManager } from "../Managers/SceneManager.js";
+import { Level } from "../Components/Level.js";
 import { Canvas, Vector, MouseState } from "../Types/types.js";
 import { Circle } from "./Circle.js";
 import { Entity } from "./Entity.js";
+import { CameraManager } from "../Managers/CameraManager.js";
 
 export class Cursor extends Entity {
     lastPosition: Vector;
@@ -10,6 +13,7 @@ export class Cursor extends Entity {
     deltaPosition: Vector;
     debugShape: Entity;
     canvas: Canvas
+    private _absolutePosition: Vector
     private _collider: CollisionManager
     private _targetID: number | boolean
     static _instance: Cursor
@@ -31,6 +35,7 @@ export class Cursor extends Entity {
         };
         this._targetID = false;
         this.deltaPosition = Vector.zero();
+        this._absolutePosition = Vector.zero();
         this.debugShape = new Circle(this.position.world, 5, this);
         this.initListeners(this.canvas);
     }
@@ -93,20 +98,18 @@ export class Cursor extends Entity {
             });
         })
         canvas.addEventListener('mousemove', (e) => {
-            const rect = this.canvas.getBoundingClientRect()
-            this.lastPosition = this.lastPosition || this.position;
-            this.setPosition(new Vector(
+            const rect = this.canvas.getBoundingClientRect();
+            const camera = CameraManager.getInstance().current;
+            this.lastPosition = this.lastPosition || this.position.world;
+            this._absolutePosition = new Vector(
                 e.clientX - rect.left,
                 e.clientY - rect.top
-            ))
+            )
+            const localPosition = Vector.add(this._absolutePosition,camera.position)
             requestAnimationFrame(() => {
-                const deltaPosition: Vector = new Vector(
-                    this.position.world.x - this.lastPosition.x,
-                    this.position.world.y - this.lastPosition.y,
-                )
-                this.lastPosition = this.position.world;
-                this.deltaPosition = deltaPosition;
-
+                this.deltaPosition = Vector.sub(localPosition, this.lastPosition);
+                this.lastPosition = localPosition;
+                this.setPosition(localPosition)
             })
 
             if (!this.actions[MouseState.MOVE].length) return;

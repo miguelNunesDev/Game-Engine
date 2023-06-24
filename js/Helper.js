@@ -24,4 +24,3 @@ var lerpLine = function (line, interval) {
 };
 var abs = function (x) { return x < 0 ? -x : x; };
 export { lerp, lerpLine, Helper, abs, degToRad };
-//# sourceMappingURL=Helper.js.map

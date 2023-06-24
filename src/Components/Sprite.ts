@@ -7,7 +7,7 @@ export class Sprite extends Entity {
         super(pos, size, parent)
         this.asset = asset
     }
-    render(ctx: Context): void {
-        ctx.drawImage(this.asset,this.position.world.x, this.position.world.y)
+    render(ctx: Context): void {        
+        ctx.drawImage(this.asset,this.position.world.x, this.position.world.y, this.size.w, this.size.h)
     }
 }

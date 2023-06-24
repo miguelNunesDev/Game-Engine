@@ -51,4 +51,3 @@ var Circle = /** @class */ (function (_super) {
     return Circle;
 }(Entity));
 export { Circle };
-//# sourceMappingURL=Circle.js.map

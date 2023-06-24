@@ -44,4 +44,3 @@ var Square = /** @class */ (function (_super) {
     return Square;
 }(Entity));
 export { Square };
-//# sourceMappingURL=Square.js.map

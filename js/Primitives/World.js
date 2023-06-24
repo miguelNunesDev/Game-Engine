@@ -17,4 +17,3 @@ var World = /** @class */ (function () {
     return World;
 }());
 export { World };
-//# sourceMappingURL=World.js.map

@@ -1,25 +1,23 @@
-import { Size } from "../Types/types"
+import { IsoMap, Size } from "../Types/types.js"
 
 const tileCode = {
-    0: 'blackTile',
-    1: 'blankTile',
+    0: 'black-tile',
+    1: 'blank-tile',
 }
-type IsoMap = {
-    grid: Array<string>,
-    size: Size,
-    tileCode: {}
-}
+
 const Maps: Array<IsoMap> = []
 
 const level5x5: IsoMap = {
     grid: [
-        "00", "00", "00", "00", "00",
-        "00", "00", "00", "00", "00",
-        "00", "00", "00", "00", "00",
-        "00", "00", "00", "00", "00",
-        "00", "00", "00", "00", "00",
+        "10", "00", "10", "00", "10",
+        "00", "10", "00", "10", "00",
+        "10", "00", "10", "00", "10",
+        "00", "10", "00", "10", "00",
+        "10", "00", "10", "00", "10",
     ],
     size: new Size(5, 5),
     tileCode: tileCode
 }
 Maps.push(level5x5)
+
+export { Maps, tileCode };

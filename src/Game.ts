@@ -1,13 +1,15 @@
-import { MouseState, Vector, Canvas, Context, Size, Panel } from "./Types/types.js";
-// import { MouseManager } from './Managers/MouseManager.js';
+import { Vector, Canvas, Context, Size } from "./Types/types.js";
 import { EntitiesManager } from "./Managers/EntitiesManager.js";
-// import { CollisionManager } from "./Managers/CollisionManager.js";
 import { TimeManager } from "./Managers/TimeManager.js";
-// import { UiManager } from "./Managers/UiManager.js";
 import { DebugManager } from "./Managers/DebugManager.js";
 import { Cursor } from "./Primitives/Cursor.js";
 import { World } from "./Primitives/World.js";
 import { CollisionManager } from "./Managers/CollisionManager.js";
+import { CozyColors } from "./assets/colors.js";
+import { SceneManager } from "./Managers/SceneManager.js";
+import { AssetManager } from "./Managers/AssetsManager.js";
+import { Camera } from "./Components/Camera.js";
+import { CameraManager } from "./Managers/CameraManager.js";
 
 
 // SINGLETON
@@ -19,6 +21,8 @@ export class Game {
     private _size: Size
     private _world: World
 
+    public fill: string
+
     static DOC: any
     static WINDOW: Window
 
@@ -27,11 +31,15 @@ export class Game {
     public cursor: Cursor
     public entities: EntitiesManager
     public collision: CollisionManager
+    public scene: SceneManager
+    public asset: AssetManager
+    public camera: CameraManager
 
     private constructor(canvas: Canvas) {
 
         this._canvas = canvas;
         this._context = canvas.getContext('2d') as Context;
+        this.fill = CozyColors.green100
 
         Game._instance = this;
         Game.DOC = document;
@@ -42,29 +50,38 @@ export class Game {
 
         this._world = World.getInstance();
         //MANAGERS
+        this.asset = AssetManager.getInstance();
+        this.scene = SceneManager.getInstance(this._context, new Size(200, 150));
         this.time = TimeManager.getInstance();
         this.entities = EntitiesManager.getInstance(this._context);
         this.debug = DebugManager.getInstance(this._context);
         this.collision = CollisionManager.getInstance();
         this.cursor = Cursor.getInstance(this.canvas);
-        this.context.fillStyle = 'white';
+        this.camera = CameraManager.getInstance(new Camera(Vector.zero(), 1));
+
+        this.context.fillStyle = this.fill;
         this.context.fillRect(0, 0, this.size.w, this.size.h);
+
+
+
     }
 
     public clear() {
         this.context.clearRect(0, 0, this.size.w, this.size.h);
-        this.context.fillStyle = '#e3d7bd';
+        this.context.fillStyle = this.fill;
         this.context.fillRect(0, 0, this.size.w, this.size.h);
     }
 
     public render() {
         this.clear();
+        this.scene.current.render();
         this.entities.render();
         this.debug.render();
 
     }
 
     public update() {
+        this.time.updateDelta();
         window.requestAnimationFrame(() => {
             this.collision.update();
             this.render();
@@ -84,7 +101,6 @@ export class Game {
     private setPosition(pos: DOMRect) { return new Vector(pos.left, pos.top) }
 
     get size(): Size { return this._size }
-    private set size(size: DOMRect) { this._size = new Size(size.width, size.height) }
     private setSize(size: DOMRect) { return new Size(size.width, size.height) }
 
     get canvas(): Canvas { return this._canvas; }

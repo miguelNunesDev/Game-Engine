@@ -126,4 +126,3 @@ var Spline = /** @class */ (function (_super) {
     return Spline;
 }(Entity));
 export { Spline };
-//# sourceMappingURL=Spline.js.map

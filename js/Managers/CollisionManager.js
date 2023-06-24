@@ -61,4 +61,3 @@ var CollisionManager = /** @class */ (function () {
     return CollisionManager;
 }());
 export { CollisionManager };
-//# sourceMappingURL=CollisionManager.js.map

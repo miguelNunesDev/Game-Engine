@@ -1,4 +1,5 @@
-import { Game } from "../Game.js";
+import { EntitiesManager } from "../Managers/EntitiesManager.js";
+import { SceneManager } from "../Managers/SceneManager.js";
 import { Size, Vector, Space } from "../Types/types.js";
 import { World } from "./World.js";
 var Entity = /** @class */ (function () {
@@ -6,20 +7,28 @@ var Entity = /** @class */ (function () {
         if (pos === void 0) { pos = Vector.zero(); }
         if (size === void 0) { size = Size.zero(); }
         if (parent === void 0) { parent = false; }
-        this._uid = Game.getInstance().entities.register(this);
+        this._uid = EntitiesManager.getInstance().register(this);
         this._parent = parent ? parent : World.getInstance();
         this._childs = [];
         this._visible = true;
+        this._depth = 1;
+        this._scene = SceneManager.getInstance().current;
         this._parent.addChild(this);
         this._position = {
             world: { x: Number(pos.x.toFixed(3)), y: Number(pos.y.toFixed(3)) },
             local: Vector.sub(pos, this._parent.position.world)
         };
         this._size = size;
-        this._center = new Vector(this._position.world.x + this._size.w * 0.5, this._position.world.y + this._size.h * 0.5);
+        this._center = new Vector(Number((this._position.world.x + this._size.w * 0.5).toFixed(3)), Number((this._position.world.y + this._size.h * 0.5).toFixed(3)));
         this.setPosition(pos);
         this.visible = true;
     }
+    Object.defineProperty(Entity.prototype, "depth", {
+        get: function () { return this.position.world.y * this._depth; },
+        set: function (depth) { this._depth = depth; },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(Entity.prototype, "visible", {
         get: function () { return this._visible; },
         set: function (bol) {
@@ -38,8 +47,7 @@ var Entity = /** @class */ (function () {
         if (!this._childs.length)
             return;
         this._childs.forEach(function (child) {
-            if (!child.size)
-                return;
+            // if (!child.size) return;
             child.size = Size.add(child.size, size);
         });
     };
@@ -78,6 +86,10 @@ var Entity = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Entity.prototype.move = function (delta) {
+        var deltaPosition = Vector.add(this.position.world, delta);
+        this.setPosition(deltaPosition);
+    };
     Entity.prototype.setPosition = function (pos, space) {
         if (space === void 0) { space = Space.WORLD; }
         var deltaPosition = Vector.sub(pos, this.position.world);
@@ -98,7 +110,7 @@ var Entity = /** @class */ (function () {
     Object.defineProperty(Entity.prototype, "center", {
         get: function () { return this._center; },
         set: function (pos) {
-            this.setPosition(new Vector(pos.x - this.size.w * 0.5, pos.y - this.size.h * 0.5));
+            this.setPosition(new Vector(Number((pos.x - this.size.w * 0.5).toFixed(3)), Number((pos.y - this.size.h * 0.5).toFixed(3))));
         },
         enumerable: false,
         configurable: true
@@ -106,7 +118,7 @@ var Entity = /** @class */ (function () {
     Object.defineProperty(Entity.prototype, "size", {
         get: function () { return this._size; },
         set: function (size) {
-            var deltaSize = Size.sub(this._size, size);
+            var deltaSize = Size.sub(size, this._size);
             this._size = { w: Number(size.w.toFixed(3)), h: Number(size.h.toFixed(3)) };
             this.setChildsSize(deltaSize);
         },
@@ -134,4 +146,3 @@ var Entity = /** @class */ (function () {
     return Entity;
 }());
 export { Entity };
-//# sourceMappingURL=Entity.js.map

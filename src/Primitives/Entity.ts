@@ -1,4 +1,6 @@
-import { Game } from "../Game.js";
+import { Scene } from "../Components/Scene.js";
+import { EntitiesManager } from "../Managers/EntitiesManager.js";
+import { SceneManager } from "../Managers/SceneManager.js";
 import { Size, Vector, Space, UID, Context, boundingBox, localVector, worldVector } from "../Types/types.js";
 import { World } from "./World.js";
 
@@ -16,11 +18,15 @@ export class Entity {
     private _childs: Array<Entity>
     private _uid: UID
     private _visible: boolean
+    protected _depth: number
+    private _scene: Scene
     constructor(pos: Vector = Vector.zero(), size: Size = Size.zero(), parent: Entity | Boolean = false) {
-        this._uid = Game.getInstance().entities.register(this);
+        this._uid = EntitiesManager.getInstance().register(this);
         this._parent = parent ? parent as Entity : World.getInstance() as Entity;
         this._childs = [];
         this._visible = true;
+        this._depth = 1
+        this._scene = SceneManager.getInstance().current;
 
         this._parent.addChild(this);
 
@@ -41,6 +47,8 @@ export class Entity {
         this.visible = true;
 
     }
+    get depth() { return this.position.world.y * this._depth }
+    set depth(depth: number) { this._depth = depth }
     get visible() { return this._visible; }
     set visible(bol: boolean) {
         this._visible = bol;
@@ -53,9 +61,11 @@ export class Entity {
     }
     protected setChildsSize(size: Size): void {
         if (!this._childs.length) return;
-
+        
+        
         this._childs.forEach(child => {
-            if (!child.size) return;
+            // if (!child.size) return;
+            
             child.size = Size.add(child.size, size);
         });
     }
@@ -80,6 +90,10 @@ export class Entity {
 
     get position(): Position {
         return this._position
+    }
+    move(delta: Vector) {
+        const deltaPosition = Vector.add(this.position.world, delta);
+        this.setPosition(deltaPosition);
     }
     setPosition(pos: Vector, space: Space = Space.WORLD) {
         const deltaPosition = Vector.sub(pos, this.position.world);
@@ -108,8 +122,8 @@ export class Entity {
     }
     get center() { return this._center }
     get size(): Size { return this._size }
-    public set size(size: Size) {
-        const deltaSize = Size.sub(this._size, size)
+    set size(size: Size) {
+        const deltaSize = Size.sub(size, this._size)        
         this._size = { w: Number(size.w.toFixed(3)), h: Number(size.h.toFixed(3)) };
         this.setChildsSize(deltaSize);
     }

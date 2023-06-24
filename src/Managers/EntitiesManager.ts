@@ -23,6 +23,9 @@ export class EntitiesManager {
     }
     render() {
         if (!this.entities.length) return;
+        this.entities.sort((a: Entity, b: Entity) => {
+            return a.depth - b.depth;
+        })
         this.entities.forEach((entity: Entity) => {
             if (!entity.visible) return;
             entity.render(this._context)

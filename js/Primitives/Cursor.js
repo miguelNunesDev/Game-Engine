@@ -17,6 +17,7 @@ import { CollisionManager } from "../Managers/CollisionManager.js";
 import { Vector, MouseState } from "../Types/types.js";
 import { Circle } from "./Circle.js";
 import { Entity } from "./Entity.js";
+import { CameraManager } from "../Managers/CameraManager.js";
 var Cursor = /** @class */ (function (_super) {
     __extends(Cursor, _super);
     function Cursor(canvas) {
@@ -37,6 +38,7 @@ var Cursor = /** @class */ (function (_super) {
         };
         _this._targetID = false;
         _this.deltaPosition = Vector.zero();
+        _this._absolutePosition = Vector.zero();
         _this.debugShape = new Circle(_this.position.world, 5, _this);
         _this.initListeners(_this.canvas);
         return _this;
@@ -102,12 +104,14 @@ var Cursor = /** @class */ (function (_super) {
         });
         canvas.addEventListener('mousemove', function (e) {
             var rect = _this.canvas.getBoundingClientRect();
-            _this.lastPosition = _this.lastPosition || _this.position;
-            _this.setPosition(new Vector(e.clientX - rect.left, e.clientY - rect.top));
+            var camera = CameraManager.getInstance().current;
+            _this.lastPosition = _this.lastPosition || _this.position.world;
+            _this._absolutePosition = new Vector(e.clientX - rect.left, e.clientY - rect.top);
+            var localPosition = Vector.add(_this._absolutePosition, camera.position);
             requestAnimationFrame(function () {
-                var deltaPosition = new Vector(_this.position.world.x - _this.lastPosition.x, _this.position.world.y - _this.lastPosition.y);
-                _this.lastPosition = _this.position.world;
-                _this.deltaPosition = deltaPosition;
+                _this.deltaPosition = Vector.sub(localPosition, _this.lastPosition);
+                _this.lastPosition = localPosition;
+                _this.setPosition(localPosition);
             });
             if (!_this.actions[MouseState.MOVE].length)
                 return;
@@ -146,4 +150,3 @@ var Cursor = /** @class */ (function (_super) {
     return Cursor;
 }(Entity));
 export { Cursor };
-//# sourceMappingURL=Cursor.js.map

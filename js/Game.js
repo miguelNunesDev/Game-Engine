@@ -1,19 +1,21 @@
 import { Vector, Size } from "./Types/types.js";
-// import { MouseManager } from './Managers/MouseManager.js';
 import { EntitiesManager } from "./Managers/EntitiesManager.js";
-// import { CollisionManager } from "./Managers/CollisionManager.js";
 import { TimeManager } from "./Managers/TimeManager.js";
-// import { UiManager } from "./Managers/UiManager.js";
 import { DebugManager } from "./Managers/DebugManager.js";
 import { Cursor } from "./Primitives/Cursor.js";
 import { World } from "./Primitives/World.js";
 import { CollisionManager } from "./Managers/CollisionManager.js";
+import { CozyColors } from "./assets/colors.js";
+import { SceneManager } from "./Managers/SceneManager.js";
+import { AssetManager } from "./Managers/AssetsManager.js";
+import { Camera } from "./Components/Camera.js";
+import { CameraManager } from "./Managers/CameraManager.js";
 // SINGLETON
 var Game = /** @class */ (function () {
-    // public ui: UiManager
     function Game(canvas) {
         this._canvas = canvas;
         this._context = canvas.getContext('2d');
+        this.fill = CozyColors.green100;
         Game._instance = this;
         Game.DOC = document;
         Game.WINDOW = window;
@@ -21,37 +23,32 @@ var Game = /** @class */ (function () {
         this._size = this.setSize(canvas.getBoundingClientRect());
         this._world = World.getInstance();
         //MANAGERS
+        this.asset = AssetManager.getInstance();
+        this.scene = SceneManager.getInstance(this._context, new Size(200, 150));
         this.time = TimeManager.getInstance();
-        this.entities = new EntitiesManager(this._context);
+        this.entities = EntitiesManager.getInstance(this._context);
         this.debug = DebugManager.getInstance(this._context);
         this.collision = CollisionManager.getInstance();
-        // this.ui = UiManager.getIntance();
         this.cursor = Cursor.getInstance(this.canvas);
-        this.context.fillStyle = 'white';
+        this.camera = CameraManager.getInstance(new Camera(Vector.zero(), 1));
+        this.context.fillStyle = this.fill;
         this.context.fillRect(0, 0, this.size.w, this.size.h);
-        // const panel = document.querySelector('#debug-panel');
-        // if (panel) {
-        //     this._debugPanel = {
-        //         element: panel as HTMLLabelElement,
-        //         content: []
-        //     }
-        //     this.ui.queue(this._debugPanel)
-        // }
     }
     Game.prototype.clear = function () {
         this.context.clearRect(0, 0, this.size.w, this.size.h);
-        this.context.fillStyle = '#e3d7bd';
+        this.context.fillStyle = this.fill;
         this.context.fillRect(0, 0, this.size.w, this.size.h);
     };
     Game.prototype.render = function () {
         this.clear();
+        this.scene.current.render();
         this.entities.render();
         this.debug.render();
     };
     Game.prototype.update = function () {
         var _this = this;
+        this.time.updateDelta();
         window.requestAnimationFrame(function () {
-            // this.ui.queue(`x: ${this.mouse.position.x} y: ${this.mouse.position.y}`);
             _this.collision.update();
             _this.render();
             _this.update();
@@ -91,4 +88,3 @@ var Game = /** @class */ (function () {
     return Game;
 }());
 export { Game };
-//# sourceMappingURL=Game.js.map

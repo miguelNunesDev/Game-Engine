@@ -6,11 +6,17 @@ type Panel = {
     element: HTMLElement,
     content: Array<string>
 }
+type TileSize = number;
+type IsoMap = {
+    grid: Array<string>,
+    size: Size,
+    tileCode: {}
+}
 enum Space {
     WORLD,
     LOCAL,
 }
-type Image = CanvasImageSource 
+type Image = CanvasImageSource
 type boundingBox = {
     position: {
         x: number,
@@ -187,5 +193,7 @@ export {
     boundingBox,
     localVector,
     worldVector,
-    Image
+    Image,
+    IsoMap,
+    TileSize
 }

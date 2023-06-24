@@ -72,4 +72,3 @@ var Handler = /** @class */ (function (_super) {
     return Handler;
 }(Entity));
 export { Handler };
-//# sourceMappingURL=Handler.js.map

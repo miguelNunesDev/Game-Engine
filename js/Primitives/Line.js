@@ -58,7 +58,6 @@ var Line = /** @class */ (function (_super) {
         configurable: true
     });
     Line.prototype.setPosition = function (pos, space) {
-        console.log('line pos');
         _super.prototype.setPosition.call(this, pos, space);
         if (!this.pi || !this.pf)
             return;
@@ -79,4 +78,3 @@ var Line = /** @class */ (function (_super) {
     return Line;
 }(Entity));
 export { Line };
-//# sourceMappingURL=Line.js.map

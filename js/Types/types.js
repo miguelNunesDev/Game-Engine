@@ -138,4 +138,3 @@ var MouseState;
     MouseState[MouseState["DRAG"] = 7] = "DRAG";
 })(MouseState || (MouseState = {}));
 export { Vector, ActionState, MouseState, Size, Space };
-//# sourceMappingURL=types.js.map

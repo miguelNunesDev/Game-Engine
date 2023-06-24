@@ -50,7 +50,6 @@ export class Line extends Entity {
     get pi() { return this._pi }
     get pf() { return this._pf }
     setPosition(pos: Vector, space?: Space): void {
-        console.log('line pos');
         
         super.setPosition(pos, space);
         if (!this.pi || !this.pf) return;

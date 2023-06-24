@@ -1,5 +1,8 @@
 import { Game } from './Game.js'
+import { Square } from './Primitives/Square.js';
 import { Canvas, Size, Vector } from './Types/types.js';
+import { Level } from './Components/Level.js';
+import { Maps, tileCode } from './assets/maps.js';
 
 const Doc: any = document;
 const canvas: Canvas | null = document.querySelector('#canvas');
@@ -7,7 +10,19 @@ if (!canvas) throw 'No canvas found';
 Doc.game = Game.getInstance(canvas);
 const game: Game = Doc.game;
 
+// ASSETS
+game.asset.add('blank-tile','../assets/blank_tile.png');
+game.asset.add('black-tile','../assets/black_tile.png');
+
 document.addEventListener('DOMContentLoaded', () => {
+    game.asset.load();
     game.update();
+    game.scene.current = new Level(Maps[0], tileCode);
+    // game.camera.current.zoom = 0.5;
+    game.camera.current.position = new Vector(10,10);
+
+    const level = game.scene.current as Level
+    
+
 
 });
