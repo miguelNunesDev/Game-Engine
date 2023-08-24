@@ -1,14 +1,3 @@
-var Helper = /** @class */ (function () {
-    function Helper() {
-    }
-    Helper.lerp = function (from, to, interval) {
-        return {
-            x: (1 - interval) * from.x + interval * to.x,
-            y: (1 - interval) * from.y + interval * to.y,
-        };
-    };
-    return Helper;
-}());
 var degToRad = function (deg) { return (deg * Math.PI) / 180; };
 var lerp = function (from, to, interval) {
     return {
@@ -23,4 +12,17 @@ var lerpLine = function (line, interval) {
     };
 };
 var abs = function (x) { return x < 0 ? -x : x; };
-export { lerp, lerpLine, Helper, abs, degToRad };
+var createObjectFromEnum = function (enumerator) {
+    var obj = {};
+    Object.keys(enumerator).forEach(function (key) {
+        var number = Number(key);
+        if (Number.isNaN(number))
+            return;
+        obj[Number(key)] = [];
+    });
+    return obj;
+};
+var isTouchDevice = function () {
+    return 'ontouchstart' in window;
+};
+export { lerp, lerpLine, abs, degToRad, createObjectFromEnum, isTouchDevice };

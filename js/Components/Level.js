@@ -48,12 +48,12 @@ var Level = /** @class */ (function (_super) {
             var colI = i % _this._mapBlueprint.size.w;
             var tileSize = Size.mult(SceneManager.getInstance().tileSize, camera.zoom);
             var pos = new Vector(((tileSize.w * 0.5) * colI) - ((tileSize.w * 0.5) * rowI), ((tileSize.h * 0.5) * rowI) + ((tileSize.h * 0.5) * colI));
-            tile.setPosition(Vector.add(pos, camera.position));
-            tile.size = tileSize;
+            tile.transform.position = Vector.add(pos, camera.position);
+            tile.transform.size = tileSize;
         });
     };
     Level.prototype.render = function () {
-        this.updateMap();
+        // this.updateMap();
     };
     Object.defineProperty(Level.prototype, "mapSet", {
         get: function () { return this._mapSet; },

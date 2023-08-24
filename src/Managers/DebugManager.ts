@@ -18,8 +18,8 @@ export class DebugManager {
     }
     boundingBox(entity: Entity, color: string = 'gray') {
         const box = new Square(
-            entity.boundingBox.position,
-            entity.boundingBox.size,
+            entity.transform.data.position,
+            entity.transform.data.size,
             entity,
             color
         )

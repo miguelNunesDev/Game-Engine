@@ -1,5 +1,5 @@
 import { abs, degToRad } from "../Helper.js"
-import { Vector, Magnitude, Rad, Size, Context, Space } from "../Types/types.js"
+import { Vector, Magnitude, Rad, Size, Context, Container } from "../Types/types.js"
 import { Entity } from "./Entity.js"
 
 export class Line extends Entity {
@@ -7,7 +7,7 @@ export class Line extends Entity {
     private _pf: Vector
     public color: string
     public style: string
-    constructor(p1: Vector, p2: Vector | Magnitude, angle: number | boolean = false, parent: Entity | boolean = false, color: string = 'gray') {
+    constructor(p1: Vector, p2: Vector | Magnitude, angle?: number, parent?: Container, color: string = 'gray') {
 
         let pf = p2 as Vector;
         if (!Vector.is(p2) && typeof angle !== "boolean") {
@@ -29,7 +29,7 @@ export class Line extends Entity {
             abs(pf.y - p1.y)
         )
 
-        super(pos, size, parent);
+        super(pos, size, angle, parent);
         this.color = color;
         this.style = 'solid';
         this._pi = p1
@@ -37,26 +37,24 @@ export class Line extends Entity {
 
 
     }
-    set pf(pos : Vector) {
+    set pf(pos: Vector) {
         const deltaPos = Vector.sub(this._pf, pos);
-        this._center = Vector.add(this._center,deltaPos);
+        this.transform.center = Vector.add(this.transform.center, deltaPos);
         this._pf = pos;
     }
-    set pi(pos : Vector) {
+    set pi(pos: Vector) {
         const deltaPos = Vector.sub(this._pi, pos);
-        this._center = Vector.add(this._center,deltaPos);
+        this.transform.center = Vector.add(this.transform.center, deltaPos);
         this._pi = pos;
     }
     get pi() { return this._pi }
     get pf() { return this._pf }
-    setPosition(pos: Vector, space?: Space): void {
-        
-        super.setPosition(pos, space);
-        if (!this.pi || !this.pf) return;
+    setPosition(pos: Vector): void {
+        this.transform.position = pos;
         this._pi = pos;
         this._pf = new Vector(
-            this._pi.x + this._size.w,
-            this._pi.y + this._size.h
+            this._pi.x + this.transform.size.w,
+            this._pi.y + this.transform.size.h
         );
 
     }

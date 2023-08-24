@@ -1,50 +1,53 @@
 import { CollisionManager } from "../Managers/CollisionManager.js";
-import { SceneManager } from "../Managers/SceneManager.js";
-import { Level } from "../Components/Level.js";
-import { Canvas, Vector, MouseState } from "../Types/types.js";
-import { Circle } from "./Circle.js";
-import { Entity } from "./Entity.js";
-import { CameraManager } from "../Managers/CameraManager.js";
-import { TimeManager } from "../Managers/TimeManager.js";
+import { Canvas, Vector, CursorState, CursorType, Size, Context } from "../Types/types.js";
+import { createObjectFromEnum, isTouchDevice } from "../Helper.js";
+import { Transform } from "../Modules/Transform.js";
 
-export class Cursor extends Entity {
+type CursorAction = {
+    [i in CursorType]: {
+        [key in CursorState]: Array<Function>;
+    };
+};
+
+export class Cursor {
     lastPosition: Vector;
-    state: MouseState;
-    actions: { [key in keyof typeof MouseState as number]: Array<Function> };
+    state: CursorState;
+    actions: CursorAction;
     deltaPosition: Vector;
-    debugShape: Entity;
     canvas: Canvas
     private _absolutePosition: Vector
     private _collider: CollisionManager
     private _targetID: number | boolean
+    private _type: CursorType
     static _instance: Cursor
+    readonly transform: Transform
     private constructor(canvas: Canvas) {
-        super();
+    
+        // super(Vector.zero, Size.zero, 0);
         this._collider = CollisionManager.getInstance()
-        this.lastPosition = Vector.zero();
-        this.state = MouseState.IDLE;
+        this.transform = new Transform(Vector.zero, Size.zero, 0)
+        this.lastPosition = Vector.zero;
+        this.state = CursorState.IDLE;
         this.canvas = canvas;
         this.actions = {
-            0: [],
-            1: [],
-            2: [],
-            3: [],
-            4: [],
-            5: [],
-            6: [],
-            7: []
+            mouse: createObjectFromEnum(CursorState),
+            touch: createObjectFromEnum(CursorState),
         };
         this._targetID = false;
-        this.deltaPosition = Vector.zero();
-        this._absolutePosition = Vector.zero();
-        this.debugShape = new Circle(this.position.world, 5, this);
+        this.deltaPosition = Vector.zero;
+        this._absolutePosition = Vector.zero;
         this.initListeners(this.canvas);
+        this._type = isTouchDevice() ? 'touch' : 'mouse'
     }
-    public static getInstance(canvas: Canvas | boolean = false): Cursor {
-        if (!Cursor._instance) {
-            Cursor._instance = new Cursor(canvas as Canvas);
-        }
-        return Cursor._instance;
+    public static getInstance(canvas?: Canvas): Cursor {
+        
+        if (!Cursor._instance && !canvas) console.error('No context provided');
+
+        Cursor._instance = Cursor._instance
+            ? Cursor._instance
+            : new Cursor(canvas);
+
+        return Cursor._instance
     }
 
     initListeners(canvas: Canvas) {
@@ -52,123 +55,83 @@ export class Cursor extends Entity {
         canvas.addEventListener('mousedown', () => {
             console.log('MOUSE DOWN');
 
-            this.state = MouseState.L_DOWN;
-            if (!this.actions[MouseState.L_DOWN].length) return;
-            this.actions[MouseState.L_DOWN].forEach((func: Function) => {
+            this.state = CursorState.PRIMARY_DOWN;
+            if (!this.actions['mouse'][CursorState.PRIMARY_DOWN].length) return;
+            this.actions['mouse'][CursorState.PRIMARY_DOWN].forEach((func: Function) => {
                 func();
             })
         })
         canvas.addEventListener('touchstart', (e) => {
-            
-            this.state = MouseState.L_DOWN;
-            if (!this.actions[MouseState.L_DOWN].length) return;
-            this.actions[MouseState.L_DOWN].forEach((func: Function) => {
+
+            this.state = CursorState.PRIMARY_DOWN;
+            if (!this.actions['touch'][CursorState.PRIMARY_DOWN].length) return;
+            this.actions['touch'][CursorState.PRIMARY_DOWN].forEach((func: Function) => {
                 func();
             })
         }, { passive: false })
         // canvas.addEventListener('touchmove', () => {
-        //     this.state = MouseState.DRAG;
-        //     this.actions[MouseState.DRAG].forEach(action => {
+        //     this.state = CursorState.DRAG;
+        //     this.actions[CursorState.DRAG].forEach(action => {
         //         action();
         //     });
         // }, { passive: false })
         canvas.addEventListener('touchend', () => {
-            this.state = MouseState.L_UP;
-            this.actions[MouseState.L_UP].forEach(action => {
+            this.state = CursorState.PRIMARY_UP;
+            this.actions['touch'][CursorState.PRIMARY_UP].forEach(action => {
                 action();
             });
         })
         canvas.addEventListener('dragstart', (e) => {
             e.preventDefault();
-            this.state = MouseState.L_DOWN;
-            this.actions[MouseState.L_DOWN].forEach(action => {
+            this.state = CursorState.PRIMARY_DOWN;
+            this.actions['touch'][CursorState.PRIMARY_DOWN].forEach(action => {
                 action();
             });
         })
         canvas.addEventListener('dragend', () => {
-            this.state = MouseState.L_UP;
-            this.actions[MouseState.L_UP].forEach(action => {
+            this.state = CursorState.PRIMARY_UP;
+            this.actions['touch'][CursorState.PRIMARY_UP].forEach(action => {
                 action();
             });
         })
         canvas.addEventListener('mouseleave', () => {
-            this.state = MouseState.LEAVE;
-            if (!this.actions[MouseState.LEAVE].length) return;
-            this.actions[MouseState.LEAVE].forEach(action => {
+            this.state = CursorState.LEAVE;
+            if (!this.actions['mouse'][CursorState.LEAVE].length) return;
+            this.actions['mouse'][CursorState.LEAVE].forEach(action => {
                 action();
             });
         })
         canvas.addEventListener('mouseup', () => {
-            this.state = MouseState.L_UP;
-            if (!this.actions[MouseState.L_UP].length) return;
+            this.state = CursorState.PRIMARY_UP;
+            if (!this.actions['mouse'][CursorState.PRIMARY_UP].length) return;
 
-            this.actions[MouseState.L_UP].forEach(action => {
+            this.actions['mouse'][CursorState.PRIMARY_UP].forEach(action => {
                 action();
             });
         })
 
         canvas.addEventListener('mousemove', (e) => {
-            const rect = this.canvas.getBoundingClientRect();
-            const camera = CameraManager.getInstance().current;
-            this.lastPosition = this.lastPosition || this.position.world;
-            this._absolutePosition = new Vector(
-                e.clientX - rect.left,
-                e.clientY - rect.top
-            )
-            const localPosition = Vector.add(this._absolutePosition, camera.position)
-            requestAnimationFrame(() => {
-                this.deltaPosition = Vector.sub(localPosition, this.lastPosition);
-                this.lastPosition = localPosition;
-                this.setPosition(localPosition)
-            })
 
-            if (!this.actions[MouseState.MOVE].length) return;
-            this.actions[MouseState.MOVE].forEach(action => {
+
+            this.transform.position = this.getAbsolutePosition(e);
+
+
+            if (!this.actions['mouse'][CursorState.MOVE].length) return;
+            this.actions['mouse'][CursorState.MOVE].forEach(action => {
                 action();
             });
         })
         canvas.addEventListener('touchmove', (e) => {
-            const rect = this.canvas.getBoundingClientRect();
-            const camera = CameraManager.getInstance().current;
-            this.lastPosition = this.lastPosition || this.position.world;
-            this._absolutePosition = new Vector(
-                e.touches[0].clientX - rect.left,
-                e.touches[0].clientY - rect.top
-            )
-            const localPosition = Vector.add(this._absolutePosition, camera.position)
-            requestAnimationFrame(() => {
-                this.deltaPosition = Vector.sub(localPosition, this.lastPosition);
-                this.lastPosition = localPosition;
-                this.setPosition(localPosition)
-            })
-            console.log(localPosition);
-            
-
-            if (!this.actions[MouseState.MOVE].length) return;
-            this.actions[MouseState.MOVE].forEach(action => {
-                action();
-            });
         })
     }
-    on(type: MouseState, f: Function) {
-        this.actions[type].push(f);
+    on(state: CursorState, f: Function, type?: CursorType) {
+        this.actions[type || this._type][state].push(f);
     }
-    get targetID() { return this._targetID }
-    onEntityClick(entity: Entity, f: Function) {
-        this._collider.listen(this, entity, () => {
-            if (this.state !== MouseState.L_DOWN) return;
-            const colliding = this._collider.check(this, entity);
-            const validTarget = this._targetID === false || this._targetID === entity.uid;
-            if (colliding && validTarget) {
-                this._targetID = entity.uid;
-                f()
-            }
-        })
-        this.on(MouseState.L_UP, () => {
-            this._targetID = false;
-        })
-    }
-    onEntityHover(entity: Entity, f: Function) {
-        this._collider.listen(this, entity, f)
+    getAbsolutePosition(e: MouseEvent) {
+        const rect = this.canvas.getBoundingClientRect();
+        return new Vector(
+            e.clientX - rect.left,
+            e.clientY - rect.top
+        )
     }
 }

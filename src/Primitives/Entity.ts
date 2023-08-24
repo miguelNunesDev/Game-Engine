@@ -1,140 +1,37 @@
-import { Scene } from "../Components/Scene.js";
 import { EntitiesManager } from "../Managers/EntitiesManager.js";
-import { SceneManager } from "../Managers/SceneManager.js";
-import { Size, Vector, Space, UID, Context, boundingBox, localVector, worldVector } from "../Types/types.js";
-import { World } from "./World.js";
-
-type Position = {
-    local: localVector;
-    world: worldVector;
-}
+import { Containable } from "../Modules/Containable.js";
+import { EventListener } from "../Modules/EventListener.js";
+import { Transform } from "../Modules/Transform.js";
+import { Size, Vector, UID, Context, Container } from "../Types/types.js";
 
 
 export class Entity {
-    private _position: Position
-    protected _size: Size
-    protected _center: localVector
-    private _parent: Entity
-    private _childs: Array<Entity>
+    readonly transform: Transform
+    readonly container: Containable
+    readonly event: EventListener
     private _uid: UID
     private _visible: boolean
     protected _depth: number
-    private _scene: Scene
-    constructor(pos: Vector = Vector.zero(), size: Size = Size.zero(), parent: Entity | Boolean = false) {
+    constructor(pos?: Vector, size?: Size, degre?: number, parent?: Container) {
         this._uid = EntitiesManager.getInstance().register(this);
-        this._parent = parent ? parent as Entity : World.getInstance() as Entity;
-        this._childs = [];
+        this.transform = new Transform(pos, size, degre);
+        this.container = new Containable(this,parent);
+        this.event = new EventListener(this);
         this._visible = true;
         this._depth = 1
-        this._scene = SceneManager.getInstance().current;
 
-        this._parent.addChild(this);
-
-
-        this._position = {
-            world: { x: Number(pos.x.toFixed(3)), y: Number(pos.y.toFixed(3)) },
-            local: Vector.sub(pos, this._parent.position.world)
-        }
-
-        this._size = size;
-
-        this._center = new Vector(
-            Number((this._position.world.x + this._size.w * 0.5).toFixed(3)),
-            Number((this._position.world.y + this._size.h * 0.5).toFixed(3))
-        )
-
-        this.setPosition(pos);
         this.visible = true;
-
     }
-    get depth() { return this.position.world.y * this._depth }
+
+    get depth() { return this.transform.position.y * this._depth }
     set depth(depth: number) { this._depth = depth }
     get visible() { return this._visible; }
     set visible(bol: boolean) {
         this._visible = bol;
-        if (!this.childs.length) return;
-        this.childs.forEach(child => { child.visible = bol });
+        this.container.setChildsVisibility(bol);
     }
 
-    scale(scalar: number) {
-        this.size = Size.mult(this.size, scalar)
-    }
-    protected setChildsSize(size: Size): void {
-        if (!this._childs.length) return;
-        
-        
-        this._childs.forEach(child => {
-            // if (!child.size) return;
-            
-            child.size = Size.add(child.size, size);
-        });
-    }
-    private updateChildsPosition(deltaPosition: Vector): void {
-
-        if (!this._childs.length) return;
-
-        this._childs.forEach((child) => {
-            child.setPosition(Vector.add(child.position.world, deltaPosition), Space.WORLD)
-        })
-    }
     get uid(): UID { return this._uid }
-    get childs(): Array<Entity> { return this._childs };
-    set childs(childs: Array<Entity>) {
-        this._childs = childs;
-        this._childs.map((child) => { child.parent = this })
-    }
-    addChild(child: Entity): Entity {
-        this._childs.push(child); return this._childs[this._childs.length - 1]
-    }
-    setChildsVisibility(bol: boolean) { this.childs.forEach(child => child.visible = bol); }
 
-    get position(): Position {
-        return this._position
-    }
-    move(delta: Vector) {
-        const deltaPosition = Vector.add(this.position.world, delta);
-        this.setPosition(deltaPosition);
-    }
-    setPosition(pos: Vector, space: Space = Space.WORLD) {
-        const deltaPosition = Vector.sub(pos, this.position.world);
-        switch (space) {
-            case Space.LOCAL:
-                // TODO:
-                break;
-            case Space.WORLD:
-                this._position = {
-                    local: Vector.sub(this.position.world, this._parent.position.world),
-                    world: { x: Number(pos.x.toFixed(3)), y: Number(pos.y.toFixed(3)) }
-                }
-                break;
-        }
-        this._center = new Vector(
-            this.position.world.x + Number((this._size.w * 0.5).toFixed(3)),
-            this.position.world.y + Number((this._size.h * 0.5).toFixed(3))
-        )
-        this.updateChildsPosition(deltaPosition);
-    }
-    set center(pos: Vector) {
-        this.setPosition(new Vector(
-            Number((pos.x - this.size.w * 0.5).toFixed(3)),
-            Number((pos.y - this.size.h * 0.5).toFixed(3))
-        ))
-    }
-    get center() { return this._center }
-    get size(): Size { return this._size }
-    set size(size: Size) {
-        const deltaSize = Size.sub(size, this._size)        
-        this._size = { w: Number(size.w.toFixed(3)), h: Number(size.h.toFixed(3)) };
-        this.setChildsSize(deltaSize);
-    }
-    get boundingBox(): boundingBox {
-        return { position: this._position.world, size: this._size }
-    }
-    get parent() { return this._parent }
-    set parent(e: Entity) {
-        this._parent = e;
-        this._parent.addChild(this);
-        this.setPosition(this.position.world, Space.WORLD);
-    }
     render(ctx: Context) { }
 }

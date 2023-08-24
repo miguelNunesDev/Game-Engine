@@ -2,12 +2,12 @@ export {};
 // export class MouseManager {
 //     position: Vector;
 //     lastPosition: Vector;
-//     state: MouseState;
-//     actions: { [key in MouseState]: Array<Function> };
+//     state: CursorState;
+//     actions: { [key in CursorState]: Array<Function> };
 //     distance: Vector;
 //     debug: Circle;
 //     constructor(canvas: HTMLCanvasElement) {
-//         this.state = MouseState.L_UP;
+//         this.state = CursorState.PRIMARY_UP;
 //         this.distance;
 //         this.position = new Vector(0, 0);
 //         this.actions = {
@@ -21,39 +21,39 @@ export {};
 //     }
 //     initListeners(canvas: HTMLCanvasElement) {
 //         canvas.addEventListener('mousedown', () => {
-//             this.state = MouseState.L_DOWN;
-//             this.actions[MouseState.L_DOWN].forEach(action => {
+//             this.state = CursorState.PRIMARY_DOWN;
+//             this.actions[CursorState.PRIMARY_DOWN].forEach(action => {
 //                 action();
 //             });
 //         })
 //         canvas.addEventListener('touchmove', () => {
-//             this.state = MouseState.L_DOWN;
-//             this.actions[MouseState.L_DOWN].forEach(action => {
+//             this.state = CursorState.PRIMARY_DOWN;
+//             this.actions[CursorState.PRIMARY_DOWN].forEach(action => {
 //                 action();
 //             });
 //         }, { passive: false })
 //         canvas.addEventListener('dragstart', (e) => {
 //             e.preventDefault();
-//             this.state = MouseState.L_DOWN;
-//             this.actions[MouseState.L_DOWN].forEach(action => {
+//             this.state = CursorState.PRIMARY_DOWN;
+//             this.actions[CursorState.PRIMARY_DOWN].forEach(action => {
 //                 action();
 //             });
 //         })
 //         canvas.addEventListener('dragend', () => {
-//             this.state = MouseState.L_UP;
-//             this.actions[MouseState.L_UP].forEach(action => {
+//             this.state = CursorState.PRIMARY_UP;
+//             this.actions[CursorState.PRIMARY_UP].forEach(action => {
 //                 action();
 //             });
 //         })
 //         canvas.addEventListener('mouseleave', () => {
-//             this.state = MouseState.L_UP;
-//             this.actions[MouseState.L_UP].forEach(action => {
+//             this.state = CursorState.PRIMARY_UP;
+//             this.actions[CursorState.PRIMARY_UP].forEach(action => {
 //                 action();
 //             });
 //         })
 //         canvas.addEventListener('mouseup', () => {
-//             this.state = MouseState.L_UP;
-//             this.actions[MouseState.L_UP].forEach(action => {
+//             this.state = CursorState.PRIMARY_UP;
+//             this.actions[CursorState.PRIMARY_UP].forEach(action => {
 //                 action();
 //             });
 //         })
@@ -73,7 +73,7 @@ export {};
 //             })
 //         })
 //     }
-//     addAction(f: Function, type: MouseState) {
+//     addAction(f: Function, type: CursorState) {
 //         this.actions[type].push(f);
 //     }
 // }

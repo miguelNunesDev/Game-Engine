@@ -1,5 +1,5 @@
-import { Entity } from "../Primitives/Entity";
-import { Size } from "../Types/types";
+import { Transform } from "../Modules/Transform.js";
+import { Size } from "../Types/types.js";
 
 type Collision = {
     function: Function,
@@ -7,7 +7,7 @@ type Collision = {
 }
 export class CollisionManager {
     private static _instance: any
-    collisionQueue: Array<Collision>
+    collisionQueue: Array<Function>
     private constructor() {
         CollisionManager._instance = this;
         this.collisionQueue = [];
@@ -21,51 +21,47 @@ export class CollisionManager {
     listen(collider: any, collided: any, f: Function): any {
         const collisionID = this.collisionQueue.length;
         this.collisionQueue.push(
-            {
-                function: () => {
-                    const colliding = this.check(collider, collided);
-                    if (colliding) {
-                        f(collider, collided);
-                    }
-                    return colliding;
-                },
-                detected: false
+            () => {
+                const colliding = this.check(collider, collided);
+                if (colliding) {
+                    f(collider, collided);
+                }
             }
         );
         return this.collisionQueue[collisionID];
     }
     update() {
         this.collisionQueue.forEach(collision => {
-            collision.detected = collision.function();
+            collision();
         });
     }
-    check(collider: Entity, collided: Entity): boolean {
+    check(collider: Transform, collided: Transform): boolean {
         let colliding = {
             x: false,
             y: false
         };
-        const collidedSize: Size = {
-            w: collided.position.world.x + collided.size.w,
-            h: collided.position.world.y + collided.size.h
-        }
+        const collidedSize: Size = new Size(
+            collided.position.x + collided.size.w,
+            collided.position.y + collided.size.h
+        );
 
         colliding = {
-            x: collider.position.world.x > collided.position.world.x
-                && collider.position.world.x < collidedSize.w,
-            y: collider.position.world.y > collided.position.world.y
-                && collider.position.world.y < collidedSize.h
+            x: collider.position.x > collided.position.x
+                && collider.position.x < collidedSize.w,
+            y: collider.position.y > collided.position.y
+                && collider.position.y < collidedSize.h
         }
 
         if (collider.size) {
             const colliderSize = {
-                x: collider.position.world.x + collider.size.w,
-                y: collider.position.world.y + collider.size.h
+                x: collider.position.x + collider.size.w,
+                y: collider.position.y + collider.size.h
             }
             colliding = {
-                x: colliderSize.x > collided.position.world.x
-                    && collider.position.world.x < collidedSize.w,
-                y: colliderSize.x > collided.position.world.y
-                    && collider.position.world.y < collidedSize.h
+                x: colliderSize.x > collided.position.x
+                    && collider.position.x < collidedSize.w,
+                y: colliderSize.x > collided.position.y
+                    && collider.position.y < collidedSize.h
             }
         }
         return colliding.x && colliding.y;

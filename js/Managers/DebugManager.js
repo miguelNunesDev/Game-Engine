@@ -13,7 +13,7 @@ var DebugManager = /** @class */ (function () {
     };
     DebugManager.prototype.boundingBox = function (entity, color) {
         if (color === void 0) { color = 'gray'; }
-        var box = new Square(entity.boundingBox.position, entity.boundingBox.size, entity, color);
+        var box = new Square(entity.transform.data.position, entity.transform.data.size, entity, color);
         box.visible = false;
         box.style = 'dashed';
         this.queue.push(function (ctx) {

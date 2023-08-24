@@ -1,6 +1,6 @@
 import { TimeManager } from "../Managers/TimeManager.js";
 import { Cursor } from "../Primitives/Cursor.js";
-import { MouseState, Vector } from "../Types/types.js";
+import { CursorState, Vector } from "../Types/types.js";
 var Camera = /** @class */ (function () {
     function Camera(pos, zoom) {
         this._position = pos;
@@ -13,14 +13,13 @@ var Camera = /** @class */ (function () {
         var cursor = Cursor.getInstance();
         var time = TimeManager.getInstance();
         time.onUpdate(function (delta) {
-            if (cursor.state !== MouseState.L_DOWN)
+            if (cursor.state !== CursorState.PRIMARY_DOWN)
                 return;
-            var lastPosition = cursor.position.world;
+            var lastPosition = cursor.transform.position;
             requestAnimationFrame(function () {
-                var deltaPos = Vector.sub(cursor.position.world, lastPosition);
-                console.log(cursor.position.world);
-                _this._position = Vector.add(_this._position, Vector.mult(deltaPos, delta * 1));
-                lastPosition = _this._position;
+                var deltaPos = Vector.sub(cursor.transform.position, lastPosition);
+                console.log({ camera: _this._position, delta: deltaPos, total: Vector.add(deltaPos, _this._position) });
+                _this._position = Vector.add(deltaPos, _this._position);
             });
         });
     };

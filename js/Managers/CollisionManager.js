@@ -1,3 +1,4 @@
+import { Size } from "../Types/types.js";
 var CollisionManager = /** @class */ (function () {
     function CollisionManager() {
         CollisionManager._instance = this;
@@ -12,21 +13,17 @@ var CollisionManager = /** @class */ (function () {
     CollisionManager.prototype.listen = function (collider, collided, f) {
         var _this = this;
         var collisionID = this.collisionQueue.length;
-        this.collisionQueue.push({
-            function: function () {
-                var colliding = _this.check(collider, collided);
-                if (colliding) {
-                    f(collider, collided);
-                }
-                return colliding;
-            },
-            detected: false
+        this.collisionQueue.push(function () {
+            var colliding = _this.check(collider, collided);
+            if (colliding) {
+                f(collider, collided);
+            }
         });
         return this.collisionQueue[collisionID];
     };
     CollisionManager.prototype.update = function () {
         this.collisionQueue.forEach(function (collision) {
-            collision.detected = collision.function();
+            collision();
         });
     };
     CollisionManager.prototype.check = function (collider, collided) {
@@ -34,26 +31,23 @@ var CollisionManager = /** @class */ (function () {
             x: false,
             y: false
         };
-        var collidedSize = {
-            w: collided.position.world.x + collided.size.w,
-            h: collided.position.world.y + collided.size.h
-        };
+        var collidedSize = new Size(collided.position.x + collided.size.w, collided.position.y + collided.size.h);
         colliding = {
-            x: collider.position.world.x > collided.position.world.x
-                && collider.position.world.x < collidedSize.w,
-            y: collider.position.world.y > collided.position.world.y
-                && collider.position.world.y < collidedSize.h
+            x: collider.position.x > collided.position.x
+                && collider.position.x < collidedSize.w,
+            y: collider.position.y > collided.position.y
+                && collider.position.y < collidedSize.h
         };
         if (collider.size) {
             var colliderSize = {
-                x: collider.position.world.x + collider.size.w,
-                y: collider.position.world.y + collider.size.h
+                x: collider.position.x + collider.size.w,
+                y: collider.position.y + collider.size.h
             };
             colliding = {
-                x: colliderSize.x > collided.position.world.x
-                    && collider.position.world.x < collidedSize.w,
-                y: colliderSize.x > collided.position.world.y
-                    && collider.position.world.y < collidedSize.h
+                x: colliderSize.x > collided.position.x
+                    && collider.position.x < collidedSize.w,
+                y: colliderSize.x > collided.position.y
+                    && collider.position.y < collidedSize.h
             };
         }
         return colliding.x && colliding.y;

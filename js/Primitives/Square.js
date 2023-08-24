@@ -17,7 +17,7 @@ import { Entity } from "./Entity.js";
 var Square = /** @class */ (function (_super) {
     __extends(Square, _super);
     function Square(pos, size, parent, stroke, fill) {
-        var _this = _super.call(this, pos, size, parent) || this;
+        var _this = _super.call(this, pos, size, 0, parent) || this;
         _this.stroke = stroke || false;
         _this.fill = fill || false;
         _this.style = 'solid';
@@ -29,7 +29,7 @@ var Square = /** @class */ (function (_super) {
             ctx.setLineDash([5, 5]);
         }
         ctx.beginPath();
-        ctx.rect(this.position.world.x, this.position.world.y, this.size.w, this.size.h);
+        ctx.rect(this.transform.position.x, this.transform.position.y, this.transform.size.w, this.transform.size.h);
         if (this.stroke) {
             ctx.strokeStyle = this.stroke;
             ctx.stroke();

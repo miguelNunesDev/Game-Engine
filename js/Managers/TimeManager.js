@@ -51,7 +51,8 @@ var TimeManager = /** @class */ (function () {
         if (elapsed > this._interval) {
             this._lastTime = this._now;
         }
-        this._delta = elapsed / this._fps;
+        var delta = elapsed / this._fps;
+        this._delta = Number(delta.toFixed(3));
     };
     Object.defineProperty(TimeManager.prototype, "delta", {
         get: function () {

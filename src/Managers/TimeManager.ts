@@ -62,7 +62,8 @@ export class TimeManager {
         if (elapsed > this._interval) {
             this._lastTime = this._now;
         }
-        this._delta = elapsed / this._fps;
+        const delta = elapsed / this._fps;
+        this._delta = Number(delta.toFixed(3))
     }
     get delta(): Millisecs {
         return this._delta;

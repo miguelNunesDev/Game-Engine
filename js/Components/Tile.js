@@ -19,7 +19,7 @@ import { Sprite } from "./Sprite.js";
 var Tile = /** @class */ (function (_super) {
     __extends(Tile, _super);
     function Tile(pos, size, assetName, location, depth) {
-        var _this = _super.call(this, pos, size) || this;
+        var _this = _super.call(this, pos, size, 0) || this;
         _this._depth = depth;
         _this._assetName = assetName;
         _this._location = location;

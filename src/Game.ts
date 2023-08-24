@@ -10,7 +10,9 @@ import { SceneManager } from "./Managers/SceneManager.js";
 import { AssetManager } from "./Managers/AssetsManager.js";
 import { Camera } from "./Components/Camera.js";
 import { CameraManager } from "./Managers/CameraManager.js";
+import { EventManager } from "./Managers/EventManager.js";
 
+type GameEvents = 'update' | 'render';
 
 // SINGLETON
 export class Game {
@@ -19,7 +21,7 @@ export class Game {
     private _context: Context
     private static _position: Vector
     private _size: Size
-    private _world: World
+    private _actions: { [key in GameEvents]?: Array<Function> }
 
     public fill: string
 
@@ -31,15 +33,18 @@ export class Game {
     public cursor: Cursor
     public entities: EntitiesManager
     public collision: CollisionManager
+    public event: EventManager
     public scene: SceneManager
     public asset: AssetManager
     public camera: CameraManager
+    public world: World
 
     private constructor(canvas: Canvas) {
 
         this._canvas = canvas;
         this._context = canvas.getContext('2d') as Context;
         this.fill = CozyColors.green100
+
 
         Game._instance = this;
         Game.DOC = document;
@@ -48,16 +53,18 @@ export class Game {
         Game._position = this.setPosition(canvas.getBoundingClientRect());
         this._size = this.setSize(canvas.getBoundingClientRect());
 
-        this._world = World.getInstance();
         //MANAGERS
+        this.collision = CollisionManager.getInstance();
+        this.cursor = Cursor.getInstance(this._canvas);
         this.asset = AssetManager.getInstance();
         this.scene = SceneManager.getInstance(this._context, new Size(200, 150));
         this.time = TimeManager.getInstance();
         this.entities = EntitiesManager.getInstance(this._context);
         this.debug = DebugManager.getInstance(this._context);
-        this.collision = CollisionManager.getInstance();
-        this.cursor = Cursor.getInstance(this.canvas);
-        this.camera = CameraManager.getInstance(new Camera(Vector.zero(), 1));
+        this.event = EventManager.getInstance();
+        // this.camera = CameraManager.getInstance(new Camera(Vector.zero, 1));
+        this.world = World.getInstance()
+
 
         this.context.fillStyle = this.fill;
         this.context.fillRect(0, 0, this.size.w, this.size.h);
@@ -77,13 +84,18 @@ export class Game {
         this.scene.current.render();
         this.entities.render();
         this.debug.render();
+        this.event.render();
 
+    }
+    public on(event: 'render' | 'update', cb: Function) {
+        this._actions[event].push(cb);
     }
 
     public update() {
         window.requestAnimationFrame(() => {
             this.time.update();
             this.collision.update();
+            this.event.update();
             this.render();
             this.update();
         });

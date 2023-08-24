@@ -6,7 +6,7 @@ export class Square extends Entity {
     fill: String | Boolean
     style: String
     constructor(pos: Vector, size: Size, parent?: Entity, stroke?: String, fill?: String) {
-        super(pos, size, parent);
+        super(pos, size,0, parent);
         this.stroke = stroke || false;
         this.fill = fill || false;
         this.style = 'solid';
@@ -20,10 +20,10 @@ export class Square extends Entity {
         ctx.beginPath();
         
         ctx.rect(
-            this.position.world.x,
-            this.position.world.y,
-            this.size.w,
-            this.size.h
+            this.transform.position.x,
+            this.transform.position.y,
+            this.transform.size.w,
+            this.transform.size.h
         );
        
         if (this.stroke) {

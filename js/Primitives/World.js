@@ -1,11 +1,11 @@
+import { Containable } from "../Modules/Containable.js";
+import { Transform } from "../Modules/Transform.js";
 import { Vector, Size } from "../Types/types.js";
 var World = /** @class */ (function () {
     function World() {
         World._instance = this;
-        this.size = Size.zero();
-        this.position = { world: Vector.zero(), local: Vector.zero() };
-        this.center = Vector.zero();
-        this.childs = [];
+        this.transform = new Transform(Vector.zero, Size.zero, 0);
+        this.container = new Containable(this, null);
     }
     World.getInstance = function () {
         if (!World._instance) {
@@ -13,7 +13,6 @@ var World = /** @class */ (function () {
         }
         return World._instance;
     };
-    World.prototype.addChild = function (child) { };
     return World;
 }());
 export { World };

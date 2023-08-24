@@ -1,13 +1,14 @@
 var EntitiesManager = /** @class */ (function () {
-    function EntitiesManager(ctx) {
+    function EntitiesManager(_context) {
+        this._context = _context;
         this.entities = [];
-        this._context = ctx;
     }
     EntitiesManager.getInstance = function (ctx) {
-        if (ctx === void 0) { ctx = false; }
-        if (!EntitiesManager._instance) {
-            EntitiesManager._instance = new EntitiesManager(ctx);
-        }
+        if (!EntitiesManager._instance && !ctx)
+            console.error('No context provided');
+        EntitiesManager._instance = EntitiesManager._instance
+            ? EntitiesManager._instance
+            : new EntitiesManager(ctx);
         return EntitiesManager._instance;
     };
     EntitiesManager.prototype.register = function (entity) {

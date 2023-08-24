@@ -17,32 +17,30 @@ import { Size, Vector } from "../Types/types.js";
 import { Entity } from "./Entity.js";
 var Circle = /** @class */ (function (_super) {
     __extends(Circle, _super);
-    function Circle(center, radius, parent, stroke, fill) {
-        if (parent === void 0) { parent = false; }
-        if (stroke === void 0) { stroke = 'white'; }
-        if (fill === void 0) { fill = 'white'; }
-        var _this = this;
-        var pos = Vector.sub(center, radius);
-        var size = new Size(radius * 2);
-        _this = _super.call(this, pos, size, parent) || this;
+    function Circle(position, radius, parent, _stroke, _fill) {
+        if (_stroke === void 0) { _stroke = 'white'; }
+        if (_fill === void 0) { _fill = 'white'; }
+        var _this = _super.call(this, position, new Size(radius * 2), 0, parent) || this;
+        _this._stroke = _stroke;
+        _this._fill = _fill;
+        console.log(_this.transform.center);
         _this._radius = radius;
-        _this._fill = fill;
-        _this._stroke = stroke;
         _this.visible = false;
         return _this;
     }
     Object.defineProperty(Circle.prototype, "size", {
         set: function (size) {
-            this._size = size;
+            this.transform.size = size;
             this._radius = size.w * 0.5;
         },
         enumerable: false,
         configurable: true
     });
     Circle.prototype.render = function (ctx) {
+        var arcPos = Vector.add(this.transform.position, this._radius);
         ctx.stroke();
         ctx.beginPath();
-        ctx.arc(this._center.x, this._center.y, this._radius, 0, 2 * Math.PI);
+        ctx.arc(arcPos.x, arcPos.x, this._radius, 0, 2 * Math.PI);
         ctx.strokeStyle = this._stroke;
         ctx.fillStyle = this._fill;
         ctx.fill();

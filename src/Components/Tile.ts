@@ -9,7 +9,7 @@ export class Tile extends Entity {
     private _location: Vector
     private _sprite: Sprite
     constructor(pos: Vector, size: Size, assetName: string, location: Vector, depth: number) {
-        super(pos, size)
+        super(pos, size, 0)
         this._depth = depth
         this._assetName = assetName
         this._location = location

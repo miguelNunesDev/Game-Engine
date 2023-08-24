@@ -17,12 +17,12 @@ import { Entity } from "../Primitives/Entity.js";
 var Sprite = /** @class */ (function (_super) {
     __extends(Sprite, _super);
     function Sprite(asset, pos, size, parent) {
-        var _this = _super.call(this, pos, size, parent) || this;
+        var _this = _super.call(this, pos, size, 0, parent) || this;
         _this.asset = asset;
         return _this;
     }
     Sprite.prototype.render = function (ctx) {
-        ctx.drawImage(this.asset, this.position.world.x, this.position.world.y, this.size.w, this.size.h);
+        ctx.drawImage(this.asset, this.transform.position.x, this.transform.position.y, this.transform.size.w, this.transform.size.h);
     };
     return Sprite;
 }(Entity));

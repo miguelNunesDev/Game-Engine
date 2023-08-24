@@ -49,14 +49,14 @@ export class Level extends Scene {
                 ((tileSize.w * 0.5) * colI) - ((tileSize.w * 0.5) * rowI),
                 ((tileSize.h * 0.5) * rowI) + ((tileSize.h * 0.5) * colI)
             );
-            tile.setPosition(Vector.add(pos, camera.position));
-            tile.size = tileSize
-
+            tile.transform.position = Vector.add(pos, camera.position);
+            tile.transform.size = tileSize
+            
         });
 
     }
     render(): void {
-        this.updateMap();
+        // this.updateMap();
     }
-    get mapSet() { return this._mapSet}
+    get mapSet() { return this._mapSet }
 }

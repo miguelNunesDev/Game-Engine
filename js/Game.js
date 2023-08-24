@@ -8,8 +8,7 @@ import { CollisionManager } from "./Managers/CollisionManager.js";
 import { CozyColors } from "./assets/colors.js";
 import { SceneManager } from "./Managers/SceneManager.js";
 import { AssetManager } from "./Managers/AssetsManager.js";
-import { Camera } from "./Components/Camera.js";
-import { CameraManager } from "./Managers/CameraManager.js";
+import { EventManager } from "./Managers/EventManager.js";
 // SINGLETON
 var Game = /** @class */ (function () {
     function Game(canvas) {
@@ -21,16 +20,17 @@ var Game = /** @class */ (function () {
         Game.WINDOW = window;
         Game._position = this.setPosition(canvas.getBoundingClientRect());
         this._size = this.setSize(canvas.getBoundingClientRect());
-        this._world = World.getInstance();
         //MANAGERS
+        this.collision = CollisionManager.getInstance();
+        this.cursor = Cursor.getInstance(this._canvas);
         this.asset = AssetManager.getInstance();
         this.scene = SceneManager.getInstance(this._context, new Size(200, 150));
         this.time = TimeManager.getInstance();
         this.entities = EntitiesManager.getInstance(this._context);
         this.debug = DebugManager.getInstance(this._context);
-        this.collision = CollisionManager.getInstance();
-        this.cursor = Cursor.getInstance(this.canvas);
-        this.camera = CameraManager.getInstance(new Camera(Vector.zero(), 1));
+        this.event = EventManager.getInstance();
+        // this.camera = CameraManager.getInstance(new Camera(Vector.zero, 1));
+        this.world = World.getInstance();
         this.context.fillStyle = this.fill;
         this.context.fillRect(0, 0, this.size.w, this.size.h);
     }
@@ -44,12 +44,17 @@ var Game = /** @class */ (function () {
         this.scene.current.render();
         this.entities.render();
         this.debug.render();
+        this.event.render();
+    };
+    Game.prototype.on = function (event, cb) {
+        this._actions[event].push(cb);
     };
     Game.prototype.update = function () {
         var _this = this;
         window.requestAnimationFrame(function () {
             _this.time.update();
             _this.collision.update();
+            _this.event.update();
             _this.render();
             _this.update();
         });

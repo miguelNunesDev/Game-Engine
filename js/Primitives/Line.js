@@ -19,8 +19,6 @@ import { Entity } from "./Entity.js";
 var Line = /** @class */ (function (_super) {
     __extends(Line, _super);
     function Line(p1, p2, angle, parent, color) {
-        if (angle === void 0) { angle = false; }
-        if (parent === void 0) { parent = false; }
         if (color === void 0) { color = 'gray'; }
         var _this = this;
         var pf = p2;
@@ -30,7 +28,7 @@ var Line = /** @class */ (function (_super) {
         }
         var pos = new Vector(p1.x < pf.x ? p1.x : pf.x, p1.y < pf.y ? p1.y : pf.y);
         var size = new Size(abs(pf.x - p1.x), abs(pf.y - p1.y));
-        _this = _super.call(this, pos, size, parent) || this;
+        _this = _super.call(this, pos, size, angle, parent) || this;
         _this.color = color;
         _this.style = 'solid';
         _this._pi = p1;
@@ -41,7 +39,7 @@ var Line = /** @class */ (function (_super) {
         get: function () { return this._pf; },
         set: function (pos) {
             var deltaPos = Vector.sub(this._pf, pos);
-            this._center = Vector.add(this._center, deltaPos);
+            this.transform.center = Vector.add(this.transform.center, deltaPos);
             this._pf = pos;
         },
         enumerable: false,
@@ -51,18 +49,16 @@ var Line = /** @class */ (function (_super) {
         get: function () { return this._pi; },
         set: function (pos) {
             var deltaPos = Vector.sub(this._pi, pos);
-            this._center = Vector.add(this._center, deltaPos);
+            this.transform.center = Vector.add(this.transform.center, deltaPos);
             this._pi = pos;
         },
         enumerable: false,
         configurable: true
     });
-    Line.prototype.setPosition = function (pos, space) {
-        _super.prototype.setPosition.call(this, pos, space);
-        if (!this.pi || !this.pf)
-            return;
+    Line.prototype.setPosition = function (pos) {
+        this.transform.position = pos;
         this._pi = pos;
-        this._pf = new Vector(this._pi.x + this._size.w, this._pi.y + this._size.h);
+        this._pf = new Vector(this._pi.x + this.transform.size.w, this._pi.y + this.transform.size.h);
     };
     Line.prototype.render = function (ctx) {
         if (this.style == 'dashed') {

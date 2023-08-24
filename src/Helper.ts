@@ -1,14 +1,5 @@
-import { Vector } from "./Types/types";
+import { CursorState, Vector } from "./Types/types";
 
-class Helper {
-    static lerp(from: Vector, to: Vector, interval: number) {
-        return {
-            x: (1 - interval) * from.x + interval * to.x,
-            y: (1 - interval) * from.y + interval * to.y,
-        };
-    }
-
-}
 const degToRad = (deg: number) => (deg * Math.PI) / 180;
 const lerp = (from: Vector, to: Vector, interval: number) => {
     return {
@@ -26,4 +17,18 @@ const lerpLine = (line: { pi: Vector, pf: Vector }, interval: number) => {
 
 const abs = (x: number) => x < 0 ? -x : x;
 
-export { lerp, lerpLine, Helper, abs, degToRad };
+const createObjectFromEnum = (enumerator:any) => {
+    const obj: any = {}
+
+    Object.keys(enumerator).forEach((key) => {
+        const number = Number(key);
+        if (Number.isNaN(number)) return;
+        obj[Number(key)] = [];
+    })
+    return obj
+}
+const isTouchDevice = () => {
+    return 'ontouchstart' in window;
+}
+
+export { lerp, lerpLine, abs, degToRad, createObjectFromEnum, isTouchDevice };
