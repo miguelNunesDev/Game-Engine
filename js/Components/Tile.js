@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import { AssetManager } from "../Managers/AssetsManager.js";
+import { AssetManager } from "../engine/Managers/AssetsManager.js";
 import { Entity } from "../Primitives/Entity.js";
 import { Sprite } from "./Sprite.js";
 var Tile = /** @class */ (function (_super) {

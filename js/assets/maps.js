@@ -1,4 +1,4 @@
-import { Size } from "../Types/types.js";
+import { Size } from "../engine/Types/types.js";
 var tileCode = {
     0: 'black-tile',
     1: 'blank-tile',

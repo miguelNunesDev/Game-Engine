@@ -1,4 +1,4 @@
-import { TimeManager } from "../Managers/TimeManager.js";
+import { TimeManager } from "../engine/Managers/TimeManager.js";
 import { Cursor } from "../Primitives/Cursor.js";
 import { CursorState, Vector } from "../Types/types.js";
 var Camera = /** @class */ (function () {

@@ -19,24 +19,34 @@ var EventListener = /** @class */ (function () {
             var collider = CollisionManager.getInstance();
             return collider.check(cursor.transform, _this._entity.transform);
         };
-        this._actions = {
-            render: [],
-            update: [],
-            hover: [],
-            click: []
-        };
         this._uid = EventManager.getInstance().subscribe(this);
+        this._keyMap = {};
     }
-    Object.defineProperty(EventListener.prototype, "actions", {
-        get: function () { return this._actions; },
+    EventListener.prototype.on = function (state, cb) {
+        var event = EventManager.getInstance();
+        return event.listen(this._uid, state, cb);
+    };
+    EventListener.prototype.onKeyEvent = function (eventName, cb) {
+        var _this = this;
+        if (!this._keyLayout[eventName]) {
+            return console.error('No Event in keyLayout');
+        }
+        var manager = EventManager.getInstance();
+        this._keyLayout[eventName].forEach(function (key) {
+            var id = manager.listenKeyEvent(key, cb);
+            if (!_this._keyMap[eventName])
+                _this._keyMap[eventName] = {};
+            _this._keyMap[eventName][key] = id;
+        });
+    };
+    Object.defineProperty(EventListener.prototype, "keyLayout", {
+        get: function () { return this._keyLayout; },
+        set: function (layout) {
+            this._keyLayout = layout;
+        },
         enumerable: false,
         configurable: true
     });
-    EventListener.prototype.on = function (state, cb) {
-        var id = this._actions[state].length;
-        this._actions[state].push(cb);
-        return id;
-    };
     return EventListener;
 }());
 export { EventListener };

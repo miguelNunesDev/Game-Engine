@@ -13,8 +13,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import { CameraManager } from "../Managers/CameraManager.js";
-import { SceneManager } from "../Managers/SceneManager.js";
+import { CameraManager } from "../engine/Managers/CameraManager.js";
+import { SceneManager } from "../engine/Managers/SceneManager.js";
 import { Size, Vector } from "../Types/types.js";
 import { Scene } from "./Scene.js";
 import { Tile } from "./Tile.js";

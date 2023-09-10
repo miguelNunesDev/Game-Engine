@@ -27,10 +27,6 @@ var _Position = /** @class */ (function () {
         configurable: true
     });
     ;
-    _Position.prototype.move = function (pos) {
-        this._local = Vector.add(pos, this._local);
-        this._world = Vector.add(pos, this._world);
-    };
     _Position.prototype.resetLocal = function (pos) {
         if (pos === void 0) { pos = Vector.zero; }
         this._local = pos.fixed(this._precision);
@@ -123,7 +119,6 @@ var Transform = /** @class */ (function () {
         this._center;
         this._size = new _Size(size, this._precision);
         this._rotation = new _Rotation(degre);
-        this.move = this._position.move;
         this.scale = this._size.scale;
         this.rotate = this._rotation.rotate;
         this._actions = {
@@ -159,10 +154,14 @@ var Transform = /** @class */ (function () {
         set: function (pos) {
             this.initActions(['change', 'position'], pos);
             this._position.world = pos;
+            this._center = this._calculateCenter(pos);
         },
         enumerable: false,
         configurable: true
     });
+    Transform.prototype.move = function (delta) {
+        this.position = Vector.add(this.position, delta);
+    };
     Object.defineProperty(Transform.prototype, "localPosition", {
         set: function (pos) {
             this._position.local = pos;
@@ -170,16 +169,20 @@ var Transform = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Transform.prototype._calculateCenter = function (_pos, _size) {
+        var pos = _pos !== null && _pos !== void 0 ? _pos : this._position.world;
+        var size = _size !== null && _size !== void 0 ? _size : this._size.world;
+        var half = Size.mult(size, 0.5);
+        return new Vector(pos.x + half.w, pos.y + half.h).fixed(this._precision);
+    };
     Object.defineProperty(Transform.prototype, "center", {
         get: function () {
-            if (this._center)
-                return this._center;
-            var half = Size.mult(this._size.world, 0.5);
-            this._center = new Vector(this._position.world.x - half.w, this._position.world.y - half.h).fixed(this._precision);
-            console.log(this._center, half, this.position);
+            var _a;
+            this._center = (_a = this._center) !== null && _a !== void 0 ? _a : this._calculateCenter();
             return this._center;
         },
         set: function (pos) {
+            this._center = pos;
             var half = Size.mult(this._size.world, 0.5);
             this._position.world = new Vector(pos.x - half.w, pos.y - half.h);
         },
@@ -226,6 +229,17 @@ var Transform = /** @class */ (function () {
                 position: this._position.world,
                 size: this._size.world,
                 rotation: this._rotation.world
+            };
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Transform.prototype, "localData", {
+        get: function () {
+            return {
+                position: this._position.local,
+                size: this._size.local,
+                rotation: this._rotation.local
             };
         },
         enumerable: false,

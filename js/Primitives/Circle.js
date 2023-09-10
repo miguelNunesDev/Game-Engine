@@ -23,7 +23,6 @@ var Circle = /** @class */ (function (_super) {
         var _this = _super.call(this, position, new Size(radius * 2), 0, parent) || this;
         _this._stroke = _stroke;
         _this._fill = _fill;
-        console.log(_this.transform.center);
         _this._radius = radius;
         _this.visible = false;
         return _this;
@@ -40,11 +39,12 @@ var Circle = /** @class */ (function (_super) {
         var arcPos = Vector.add(this.transform.position, this._radius);
         ctx.stroke();
         ctx.beginPath();
-        ctx.arc(arcPos.x, arcPos.x, this._radius, 0, 2 * Math.PI);
+        ctx.arc(arcPos.x, arcPos.y, this._radius, 0, 2 * Math.PI);
         ctx.strokeStyle = this._stroke;
         ctx.fillStyle = this._fill;
         ctx.fill();
         ctx.stroke();
+        ctx.closePath();
     };
     return Circle;
 }(Entity));

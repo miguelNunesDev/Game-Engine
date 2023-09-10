@@ -11,6 +11,9 @@ var DebugManager = /** @class */ (function () {
         }
         return DebugManager._instance;
     };
+    DebugManager.prototype.transform = function (entity) {
+        var data = entity.transform.data;
+    };
     DebugManager.prototype.boundingBox = function (entity, color) {
         if (color === void 0) { color = 'gray'; }
         var box = new Square(entity.transform.data.position, entity.transform.data.size, entity, color);

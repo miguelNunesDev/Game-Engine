@@ -1,4 +1,4 @@
-import { IsoMap, Size } from "../Types/types.js"
+import { IsoMap, Size } from "../engine/Types/types.js"
 
 const tileCode = {
     0: 'black-tile',

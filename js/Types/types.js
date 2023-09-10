@@ -3,11 +3,19 @@ var Vector = /** @class */ (function () {
         this.x = x;
         this.y = y !== null && y !== void 0 ? y : x;
     }
+    Vector.prototype.add = function (p) {
+        this.x += p.x;
+        this.y += p.y;
+    };
     Vector.add = function (p1, p2) {
         if (typeof p2 === "number") {
             return new Vector(p1.x + p2, p1.y + p2);
         }
         return new Vector(p1.x + p2.x, p1.y + p2.y);
+    };
+    Vector.prototype.sub = function (p) {
+        this.x -= p.x;
+        this.y -= p.y;
     };
     Vector.sub = function (p1, p2) {
         if (typeof p2 === "number") {
@@ -15,11 +23,19 @@ var Vector = /** @class */ (function () {
         }
         return new Vector(p1.x - p2.x, p1.y - p2.y);
     };
+    Vector.prototype.mult = function (p) {
+        this.x *= p.x;
+        this.y *= p.y;
+    };
     Vector.mult = function (p1, p2) {
         if (typeof p2 === "number") {
             return new Vector(p1.x * p2, p1.y * p2);
         }
         return new Vector(p1.x * p2.x, p1.y * p2.y);
+    };
+    Vector.prototype.div = function (p) {
+        this.x /= p.x;
+        this.y /= p.y;
     };
     Vector.div = function (p1, p2) {
         if (typeof p2 === "number") {
@@ -29,6 +45,10 @@ var Vector = /** @class */ (function () {
     };
     Vector.is = function (v) { return v.x; };
     ;
+    Vector.prototype.mod = function (p) {
+        this.x %= p.x;
+        this.y %= p.y;
+    };
     Vector.mod = function (p1, p2) {
         if (typeof p2 === "number") {
             return new Vector(p1.x % p2, p1.y % p2);
